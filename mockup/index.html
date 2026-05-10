@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タスク管理アプリ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>タスク管理アプリ</h1>
+  </header>
+
+  <main>
+    <!-- 入力フォーム -->
+    <section class="form-area">
+      <div class="form-row">
+        <input type="text" id="input-title" placeholder="タスクのタイトルを入力 *" maxlength="50">
+        <textarea id="input-desc" placeholder="説明文を入力（任意）" maxlength="200" rows="1"></textarea>
+        <input type="date" id="input-deadline">
+        <select id="input-priority">
+          <option value="medium" selected>中</option>
+          <option value="high">高</option>
+          <option value="low">低</option>
+        </select>
+        <button id="btn-add" onclick="addTask()">＋ 追加</button>
+      </div>
+      <p id="form-error" class="error-msg" hidden></p>
+    </section>
+
+    <!-- カンバンボード -->
+    <div class="board">
+      <div class="column" id="col-todo">
+        <div class="column-header">
+          <span class="column-title">未着手</span>
+          <span class="column-count" id="count-todo">0</span>
+        </div>
+        <div class="sort-bar">
+          <span class="sort-label">並び替え:</span>
+          <button class="btn-sort active" id="sort-todo-manual"   onclick="setSortMode('todo','manual')">手動</button>
+          <button class="btn-sort"        id="sort-todo-priority" onclick="setSortMode('todo','priority')">優先度</button>
+          <button class="btn-sort"        id="sort-todo-deadline" onclick="setSortMode('todo','deadline')">期限</button>
+        </div>
+        <div class="card-list" id="list-todo"
+          ondragover="onDragOver(event,'todo')"
+          ondrop="onDrop(event,'todo')"
+          ondragleave="onDragLeave(event)"></div>
+      </div>
+
+      <div class="column" id="col-in_progress">
+        <div class="column-header">
+          <span class="column-title">進行中</span>
+          <span class="column-count" id="count-in_progress">0</span>
+        </div>
+        <div class="sort-bar">
+          <span class="sort-label">並び替え:</span>
+          <button class="btn-sort active" id="sort-in_progress-manual"   onclick="setSortMode('in_progress','manual')">手動</button>
+          <button class="btn-sort"        id="sort-in_progress-priority" onclick="setSortMode('in_progress','priority')">優先度</button>
+          <button class="btn-sort"        id="sort-in_progress-deadline" onclick="setSortMode('in_progress','deadline')">期限</button>
+        </div>
+        <div class="card-list" id="list-in_progress"
+          ondragover="onDragOver(event,'in_progress')"
+          ondrop="onDrop(event,'in_progress')"
+          ondragleave="onDragLeave(event)"></div>
+      </div>
+
+      <div class="column" id="col-done">
+        <div class="column-header">
+          <span class="column-title">完了</span>
+          <span class="column-count" id="count-done">0</span>
+        </div>
+        <div class="sort-bar">
+          <span class="sort-label">並び替え:</span>
+          <button class="btn-sort active" id="sort-done-manual"   onclick="setSortMode('done','manual')">手動</button>
+          <button class="btn-sort"        id="sort-done-priority" onclick="setSortMode('done','priority')">優先度</button>
+          <button class="btn-sort"        id="sort-done-deadline" onclick="setSortMode('done','deadline')">期限</button>
+        </div>
+        <div class="card-list" id="list-done"
+          ondragover="onDragOver(event,'done')"
+          ondrop="onDrop(event,'done')"
+          ondragleave="onDragLeave(event)"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 編集モーダル -->
+  <div id="modal-overlay" class="modal-overlay" hidden onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+      <h2>タスクを編集</h2>
+      <div class="modal-form">
+        <label>タイトル <span class="required">*</span>
+          <input type="text" id="edit-title" maxlength="50">
+        </label>
+        <label>説明文
+          <textarea id="edit-desc" maxlength="200" rows="3"></textarea>
+        </label>
+        <label>期限日
+          <input type="date" id="edit-deadline">
+        </label>
+        <label>優先度
+          <select id="edit-priority">
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </label>
+        <p id="edit-error" class="error-msg" hidden></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+        <button class="btn-save" onclick="saveEdit()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
