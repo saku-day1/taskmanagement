@@ -1,0 +1,38 @@
+:root {
+  --color-priority-high:   #ef4444;
+  --color-priority-medium: #eab308;
+  --color-priority-low:    #22c55e;
+  --color-overdue:         #ef4444;
+  --column-bg:             #f1f5f9;
+  --card-bg:               #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-header {
+  background: #1e293b;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f8fafc;
+}

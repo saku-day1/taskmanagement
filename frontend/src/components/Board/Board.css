@@ -1,0 +1,18 @@
+.board {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  align-items: flex-start;
+  min-height: calc(100vh - 64px);
+}
+
+.board-message {
+  text-align: center;
+  padding: 48px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.board-error {
+  color: var(--color-overdue);
+}
