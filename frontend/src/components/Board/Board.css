@@ -1,3 +1,23 @@
+.board-toolbar {
+  padding: 16px 24px 0;
+}
+
+.search-input {
+  width: 280px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  color: #1e293b;
+}
+
+.search-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px #e0e7ff;
+}
+
 .board {
   display: flex;
   gap: 16px;
