@@ -11,3 +11,10 @@ export interface Task {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateTaskRequest {
+  title: string;
+  description: string | null;
+  deadline: string | null;
+  priority: Priority | null;
+}
