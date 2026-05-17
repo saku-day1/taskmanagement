@@ -1,5 +1,8 @@
 .board-toolbar {
   padding: 16px 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .search-input {
@@ -35,4 +38,20 @@
 
 .board-error {
   color: var(--color-overdue);
+}
+
+.new-task-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #6366f1;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.new-task-btn:hover {
+  background: #4f46e5;
 }
