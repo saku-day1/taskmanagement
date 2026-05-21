@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Status, Task } from '../../types/task';
-import { fetchTasks } from '../../api/taskApi';
+import { fetchTasks, updateTaskStatus } from '../../api/taskApi';
 import BoardColumn from '../BoardColumn/BoardColumn';
 import TaskForm from '../TaskForm/TaskForm';
 import './Board.css';
@@ -38,6 +38,9 @@ export default function Board() {
       )
     : tasks;
 
+  const replaceTask = (updated: Task) =>
+    setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+
   const handleSaved = (task: Task) => {
     setTasks((prev) =>
       prev.some((t) => t.id === task.id)
@@ -48,13 +51,15 @@ export default function Board() {
     setEditingTask(undefined);
   };
 
-  const handleEdit = (task: Task) => {
-    setEditingTask(task);
-  };
-
-  const handleClose = () => {
-    setShowForm(false);
-    setEditingTask(undefined);
+  const handleDrop = async (taskId: number, newStatus: Status) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task || task.status === newStatus) return;
+    try {
+      const updated = await updateTaskStatus(taskId, newStatus);
+      replaceTask(updated);
+    } catch {
+      // ドロップ失敗時は何もしない
+    }
   };
 
   return (
@@ -63,7 +68,7 @@ export default function Board() {
         <TaskForm
           initialTask={editingTask}
           onSaved={handleSaved}
-          onClose={handleClose}
+          onClose={() => { setShowForm(false); setEditingTask(undefined); }}
         />
       )}
       <div className="board-toolbar">
@@ -82,9 +87,12 @@ export default function Board() {
         {COLUMNS.map((col) => (
           <BoardColumn
             key={col.status}
+            status={col.status}
             label={col.label}
             tasks={filtered.filter((t) => t.status === col.status)}
-            onEdit={handleEdit}
+            onEdit={setEditingTask}
+            onUpdated={replaceTask}
+            onDrop={handleDrop}
           />
         ))}
       </div>

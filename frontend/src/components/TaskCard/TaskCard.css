@@ -6,6 +6,12 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  cursor: grab;
+}
+
+.card:active {
+  cursor: grabbing;
+  opacity: 0.7;
 }
 
 .card-header {
@@ -83,3 +89,20 @@
 .priority-high   { background: var(--color-priority-high); }
 .priority-medium { background: var(--color-priority-medium); color: #1e293b; }
 .priority-low    { background: var(--color-priority-low); }
+
+.card-status-select {
+  margin-top: 4px;
+  padding: 4px 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #475569;
+  background: #f8fafc;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.card-status-select:focus {
+  outline: none;
+  border-color: #6366f1;
+}

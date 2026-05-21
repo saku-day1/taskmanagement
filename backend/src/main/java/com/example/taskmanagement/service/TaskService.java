@@ -1,5 +1,6 @@
 package com.example.taskmanagement.service;
 
+import com.example.taskmanagement.model.Status;
 import com.example.taskmanagement.model.Task;
 import com.example.taskmanagement.model.UpdateTaskRequest;
 import com.example.taskmanagement.repository.TaskRepository;
@@ -31,10 +32,17 @@ public class TaskService {
     public Task update(Long id, UpdateTaskRequest req) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found: " + id));
-        task.setTitle(req.getTitle());
+        if (req.getTitle() != null) task.setTitle(req.getTitle());
         task.setDescription(req.getDescription());
         task.setDeadline(req.getDeadline());
         task.setPriority(req.getPriority());
+        return taskRepository.save(task);
+    }
+
+    public Task updateStatus(Long id, Status status) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Task not found: " + id));
+        task.setStatus(status);
         return taskRepository.save(task);
     }
 }
