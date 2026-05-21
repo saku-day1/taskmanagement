@@ -10,6 +10,7 @@ export interface Task {
   status: Status;
   createdAt: string;
   updatedAt: string;
+  displayOrder: number | null;
 }
 
 export interface CreateTaskRequest {

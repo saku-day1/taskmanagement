@@ -106,3 +106,11 @@
   outline: none;
   border-color: #6366f1;
 }
+
+.drag-indicator-before {
+  border-top: 2px solid #6366f1;
+}
+
+.drag-indicator-after {
+  border-bottom: 2px solid #6366f1;
+}

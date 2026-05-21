@@ -1,5 +1,6 @@
 package com.example.taskmanagement.controller;
 
+import com.example.taskmanagement.model.ReorderRequest;
 import com.example.taskmanagement.model.Status;
 import com.example.taskmanagement.model.Task;
 import com.example.taskmanagement.model.UpdateTaskRequest;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -35,6 +37,11 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     public Task create(@RequestBody Task task) {
         return taskService.create(task);
+    }
+
+    @PatchMapping("/reorder")
+    public List<Task> reorder(@RequestBody ReorderRequest req) {
+        return taskService.reorderTasks(req);
     }
 
     @PatchMapping("/{id}")

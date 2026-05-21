@@ -1,12 +1,15 @@
 package com.example.taskmanagement.service;
 
+import com.example.taskmanagement.model.ReorderRequest;
 import com.example.taskmanagement.model.Status;
 import com.example.taskmanagement.model.Task;
 import com.example.taskmanagement.model.UpdateTaskRequest;
 import com.example.taskmanagement.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -18,7 +21,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     public List<Task> findAll() {
-        return taskRepository.findAll();
+        Sort sort = Sort.by(
+                Sort.Order.asc("displayOrder").nullsLast(),
+                Sort.Order.desc("createdAt")
+        );
+        return taskRepository.findAll(sort);
     }
 
     public Optional<Task> findById(Long id) {
@@ -37,6 +44,18 @@ public class TaskService {
         task.setDeadline(req.getDeadline());
         task.setPriority(req.getPriority());
         return taskRepository.save(task);
+    }
+
+    public List<Task> reorderTasks(ReorderRequest req) {
+        List<Long> orderedIds = req.getOrderedIds();
+        List<Task> updated = new ArrayList<>();
+        for (int i = 0; i < orderedIds.size(); i++) {
+            Task task = taskRepository.findById(orderedIds.get(i))
+                    .orElseThrow(() -> new NoSuchElementException("Task not found"));
+            task.setDisplayOrder(i);
+            updated.add(taskRepository.save(task));
+        }
+        return updated;
     }
 
     public Task updateStatus(Long id, Status status) {

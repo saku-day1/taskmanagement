@@ -25,3 +25,8 @@ export const updateTaskStatus = async (id: number, status: Status): Promise<Task
   const response = await apiClient.patch<Task>(`/api/tasks/${id}/status`, { status });
   return response.data;
 };
+
+export const reorderTasks = async (status: Status, orderedIds: number[]): Promise<Task[]> => {
+  const response = await apiClient.patch<Task[]>('/api/tasks/reorder', { status, orderedIds });
+  return response.data;
+};

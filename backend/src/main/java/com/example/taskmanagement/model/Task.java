@@ -40,6 +40,9 @@ public class Task {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column
+    private Integer displayOrder;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
