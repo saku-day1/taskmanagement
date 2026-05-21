@@ -107,6 +107,35 @@
   border-color: #6366f1;
 }
 
+.card-status-nav {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.status-nav-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #475569;
+  line-height: 1.4;
+  transition: background 0.15s, color 0.15s;
+}
+
+.status-nav-btn:hover {
+  background: #e0e7ff;
+  color: #6366f1;
+  border-color: #a5b4fc;
+}
+
+.status-nav-btn--next {
+  margin-left: auto;
+}
+
+
 .drag-indicator-before {
   border-top: 2px solid #6366f1;
 }

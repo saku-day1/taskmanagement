@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { Status, Task } from '../../types/task';
 import { updateTaskStatus } from '../../api/taskApi';
 import './TaskCard.css';
@@ -23,6 +24,9 @@ const STATUS_OPTIONS: { value: Status; label: string }[] = [
   { value: 'DONE', label: '完了' },
 ];
 
+const STATUS_ORDER: Status[] = ['TODO', 'IN_PROGRESS', 'DONE'];
+
+
 export default function TaskCard({
   task,
   onEdit,
@@ -35,10 +39,17 @@ export default function TaskCard({
   today.setHours(0, 0, 0, 0);
   const isOverdue = task.deadline !== null && new Date(task.deadline) < today;
 
+  const wasDraggingRef = useRef(false);
+
   const handleDragStart = (e: React.DragEvent) => {
+    wasDraggingRef.current = true;
     e.dataTransfer.setData('taskId', String(task.id));
     e.dataTransfer.setData('sourceStatus', task.status);
     e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = () => {
+    setTimeout(() => { wasDraggingRef.current = false; }, 0);
   };
 
   const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -50,6 +61,19 @@ export default function TaskCard({
       // 失敗時はUIを変えない
     }
   };
+
+  const handleStatusStep = async (direction: 'next' | 'prev') => {
+    const currentIndex = STATUS_ORDER.indexOf(task.status);
+    const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    if (nextIndex < 0 || nextIndex >= STATUS_ORDER.length) return;
+    try {
+      const updated = await updateTaskStatus(task.id, STATUS_ORDER[nextIndex]);
+      onUpdated(updated);
+    } catch {
+      // 失敗時はUIを変えない
+    }
+  };
+
 
   const cardClass = [
     'card',
@@ -64,6 +88,7 @@ export default function TaskCard({
       className={cardClass}
       draggable
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragOver={onDragOverCard ? (e) => onDragOverCard(e, task.id) : undefined}
       onDragLeave={onDragLeaveCard}
     >
@@ -73,7 +98,7 @@ export default function TaskCard({
             {PRIORITY_LABEL[task.priority]}
           </span>
         )}
-        <button className="card-edit-btn" onClick={() => onEdit(task)} aria-label="編集">
+        <button className="card-edit-btn" onClick={() => { if (wasDraggingRef.current) return; onEdit(task); }} aria-label="編集">
           ✎
         </button>
       </div>
@@ -99,6 +124,26 @@ export default function TaskCard({
           </option>
         ))}
       </select>
+      <div className="card-status-nav">
+        {task.status !== 'TODO' && (
+          <button
+            className="status-nav-btn"
+            onClick={(e) => { e.stopPropagation(); if (wasDraggingRef.current) return; handleStatusStep('prev'); }}
+            aria-label="ステータスを戻す"
+          >
+            ←
+          </button>
+        )}
+        {task.status !== 'DONE' && (
+          <button
+            className="status-nav-btn status-nav-btn--next"
+            onClick={(e) => { e.stopPropagation(); if (wasDraggingRef.current) return; handleStatusStep('next'); }}
+            aria-label="ステータスを進める"
+          >
+            →
+          </button>
+        )}
+      </div>
     </div>
   );
 }
