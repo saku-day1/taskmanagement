@@ -3,6 +3,7 @@ import './TaskCard.css';
 
 interface Props {
   task: Task;
+  onEdit: (task: Task) => void;
 }
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -11,7 +12,7 @@ const PRIORITY_LABEL: Record<string, string> = {
   LOW: '低',
 };
 
-export default function TaskCard({ task }: Props) {
+export default function TaskCard({ task, onEdit }: Props) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const isOverdue =
@@ -19,11 +20,16 @@ export default function TaskCard({ task }: Props) {
 
   return (
     <div className="card">
-      {task.priority && (
-        <span className={`priority-badge priority-${task.priority.toLowerCase()}`}>
-          {PRIORITY_LABEL[task.priority]}
-        </span>
-      )}
+      <div className="card-header">
+        {task.priority && (
+          <span className={`priority-badge priority-${task.priority.toLowerCase()}`}>
+            {PRIORITY_LABEL[task.priority]}
+          </span>
+        )}
+        <button className="card-edit-btn" onClick={() => onEdit(task)} aria-label="編集">
+          ✎
+        </button>
+      </div>
       <p className="card-title">{task.title}</p>
       {task.description && (
         <p className="card-description">{task.description}</p>

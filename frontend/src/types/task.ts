@@ -18,3 +18,10 @@ export interface CreateTaskRequest {
   deadline: string | null;
   priority: Priority | null;
 }
+
+export interface UpdateTaskRequest {
+  title: string;
+  description: string | null;
+  deadline: string | null;
+  priority: Priority | null;
+}
