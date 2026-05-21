@@ -26,6 +26,7 @@ const STATUS_OPTIONS: { value: Status; label: string }[] = [
 
 const STATUS_ORDER: Status[] = ['TODO', 'IN_PROGRESS', 'DONE'];
 
+
 export default function TaskCard({
   task,
   onEdit,
@@ -72,6 +73,7 @@ export default function TaskCard({
       // 失敗時はUIを変えない
     }
   };
+
 
   const cardClass = [
     'card',
