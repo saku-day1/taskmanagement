@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import type { CreateTaskRequest, Priority } from '../../types/task';
-import { createTask } from '../../api/taskApi';
-import type { Task } from '../../types/task';
+import type { CreateTaskRequest, UpdateTaskRequest, Priority, Task } from '../../types/task';
+import { createTask, updateTask } from '../../api/taskApi';
 import './TaskForm.css';
 
 interface Props {
-  onCreated: (task: Task) => void;
+  initialTask?: Task;
+  onSaved: (task: Task) => void;
   onClose: () => void;
 }
 
@@ -15,32 +15,44 @@ const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
   { value: 'LOW', label: '低' },
 ];
 
-export default function TaskForm({ onCreated, onClose }: Props) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [deadline, setDeadline] = useState('');
-  const [priority, setPriority] = useState<Priority | ''>('');
+export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
+  const [title, setTitle] = useState(initialTask?.title ?? '');
+  const [description, setDescription] = useState(initialTask?.description ?? '');
+  const [deadline, setDeadline] = useState(initialTask?.deadline ?? '');
+  const [priority, setPriority] = useState<Priority | ''>(initialTask?.priority ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isEdit = initialTask !== undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const data: CreateTaskRequest = {
-      title: title.trim(),
-      description: description.trim() || null,
-      deadline: deadline || null,
-      priority: priority || null,
-    };
-
     setSubmitting(true);
     setError(null);
     try {
-      const created = await createTask(data);
-      onCreated(created);
+      let saved: Task;
+      if (isEdit) {
+        const data: UpdateTaskRequest = {
+          title: title.trim(),
+          description: description.trim() || null,
+          deadline: deadline || null,
+          priority: priority || null,
+        };
+        saved = await updateTask(initialTask.id, data);
+      } else {
+        const data: CreateTaskRequest = {
+          title: title.trim(),
+          description: description.trim() || null,
+          deadline: deadline || null,
+          priority: priority || null,
+        };
+        saved = await createTask(data);
+      }
+      onSaved(saved);
     } catch {
-      setError('タスクの登録に失敗しました');
+      setError(isEdit ? 'タスクの更新に失敗しました' : 'タスクの登録に失敗しました');
     } finally {
       setSubmitting(false);
     }
@@ -49,7 +61,7 @@ export default function TaskForm({ onCreated, onClose }: Props) {
   return (
     <div className="task-form-overlay" onClick={onClose}>
       <div className="task-form-dialog" onClick={(e) => e.stopPropagation()}>
-        <h2 className="task-form-title">新規タスク</h2>
+        <h2 className="task-form-title">{isEdit ? 'タスクを編集' : '新規タスク'}</h2>
         <form onSubmit={handleSubmit} className="task-form">
           <label className="task-form-label">
             タイトル <span className="task-form-required">*</span>
@@ -112,7 +124,7 @@ export default function TaskForm({ onCreated, onClose }: Props) {
               className="task-form-btn-submit"
               disabled={submitting || !title.trim()}
             >
-              {submitting ? '登録中...' : '登録'}
+              {submitting ? (isEdit ? '更新中...' : '登録中...') : (isEdit ? '更新' : '登録')}
             </button>
           </div>
         </form>

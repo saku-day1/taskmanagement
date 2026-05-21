@@ -17,6 +17,7 @@ export default function Board() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
   useEffect(() => {
     fetchTasks()
@@ -37,15 +38,33 @@ export default function Board() {
       )
     : tasks;
 
-  const handleCreated = (task: Task) => {
-    setTasks((prev) => [...prev, task]);
+  const handleSaved = (task: Task) => {
+    setTasks((prev) =>
+      prev.some((t) => t.id === task.id)
+        ? prev.map((t) => (t.id === task.id ? task : t))
+        : [...prev, task]
+    );
     setShowForm(false);
+    setEditingTask(undefined);
+  };
+
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleClose = () => {
+    setShowForm(false);
+    setEditingTask(undefined);
   };
 
   return (
     <>
-      {showForm && (
-        <TaskForm onCreated={handleCreated} onClose={() => setShowForm(false)} />
+      {(showForm || editingTask !== undefined) && (
+        <TaskForm
+          initialTask={editingTask}
+          onSaved={handleSaved}
+          onClose={handleClose}
+        />
       )}
       <div className="board-toolbar">
         <input
@@ -65,6 +84,7 @@ export default function Board() {
             key={col.status}
             label={col.label}
             tasks={filtered.filter((t) => t.status === col.status)}
+            onEdit={handleEdit}
           />
         ))}
       </div>

@@ -5,9 +5,10 @@ import './BoardColumn.css';
 interface Props {
   label: string;
   tasks: Task[];
+  onEdit: (task: Task) => void;
 }
 
-export default function BoardColumn({ label, tasks }: Props) {
+export default function BoardColumn({ label, tasks, onEdit }: Props) {
   return (
     <div className="column">
       <div className="column-header">
@@ -16,7 +17,7 @@ export default function BoardColumn({ label, tasks }: Props) {
       </div>
       <div className="column-body">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} onEdit={onEdit} />
         ))}
         {tasks.length === 0 && (
           <p className="column-empty">タスクはありません</p>
