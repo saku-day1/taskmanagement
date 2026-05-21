@@ -20,8 +20,8 @@ export interface CreateTaskRequest {
 }
 
 export interface UpdateTaskRequest {
-  title: string;
-  description: string | null;
-  deadline: string | null;
-  priority: Priority | null;
+  title?: string;
+  description?: string | null;
+  deadline?: string | null;
+  priority?: Priority | null;
 }

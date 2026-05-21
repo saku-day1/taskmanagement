@@ -1,5 +1,6 @@
 package com.example.taskmanagement.controller;
 
+import com.example.taskmanagement.model.Status;
 import com.example.taskmanagement.model.Task;
 import com.example.taskmanagement.model.UpdateTaskRequest;
 import com.example.taskmanagement.service.TaskService;
@@ -43,5 +44,18 @@ public class TaskController {
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Task> updateStatus(@PathVariable Long id, @RequestBody StatusRequest req) {
+        try {
+            return ResponseEntity.ok(taskService.updateStatus(id, req.getStatus()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    record StatusRequest(Status status) {
+        public Status getStatus() { return status; }
     }
 }

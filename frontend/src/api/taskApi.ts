@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { CreateTaskRequest, UpdateTaskRequest, Task } from '../types/task';
+import type { CreateTaskRequest, UpdateTaskRequest, Task, Status } from '../types/task';
 
 const apiClient = axios.create({
   baseURL: 'http://localhost:8080',
@@ -18,5 +18,10 @@ export const createTask = async (data: CreateTaskRequest): Promise<Task> => {
 
 export const updateTask = async (id: number, data: UpdateTaskRequest): Promise<Task> => {
   const response = await apiClient.patch<Task>(`/api/tasks/${id}`, data);
+  return response.data;
+};
+
+export const updateTaskStatus = async (id: number, status: Status): Promise<Task> => {
+  const response = await apiClient.patch<Task>(`/api/tasks/${id}/status`, { status });
   return response.data;
 };
