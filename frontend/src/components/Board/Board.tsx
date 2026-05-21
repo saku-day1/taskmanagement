@@ -52,7 +52,6 @@ export default function Board() {
   };
 
   const handleReorder = async (status: Status, orderedIds: number[]) => {
-    // 楽観的UI更新：先にローカルの順序を変える
     setTasks((prev) => {
       const inColumn = orderedIds.map((id) => prev.find((t) => t.id === id)!).filter(Boolean);
       const others = prev.filter((t) => t.status !== status || !orderedIds.includes(t.id));
@@ -65,7 +64,6 @@ export default function Board() {
         return prev.map((t) => updatedMap.get(t.id) ?? t);
       });
     } catch {
-      // 失敗時は再フェッチで復元
       fetchTasks().then(setTasks).catch(() => {});
     }
   };

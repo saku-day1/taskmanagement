@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { CreateTaskRequest, UpdateTaskRequest, Task, Status } from '../types/task';
 
-
 const apiClient = axios.create({
   baseURL: 'http://localhost:8080',
   headers: { 'Content-Type': 'application/json' },

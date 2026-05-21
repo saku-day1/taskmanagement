@@ -97,8 +97,7 @@ export default function BoardColumn({
     if (!taskId) return;
 
     if (sourceStatus === status) {
-      // 同一カラム内並び替え
-      if (sortKey !== 'manual') return; // 手動順以外のとき並び替えは無効
+      if (sortKey !== 'manual') return;
       const currentOrder = sorted.map((t) => t.id);
       const fromIndex = currentOrder.indexOf(taskId);
       if (fromIndex === -1) return;
@@ -112,7 +111,6 @@ export default function BoardColumn({
       filtered.splice(adjustedInsert, 0, taskId);
       onReorder(status, filtered);
     } else {
-      // カラム間移動（ステータス変更）
       onDrop(taskId, status);
     }
   };
