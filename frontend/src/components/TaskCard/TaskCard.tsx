@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { Status, Task } from '../../types/task';
 import { updateTaskStatus } from '../../api/taskApi';
 import './TaskCard.css';
@@ -37,10 +38,17 @@ export default function TaskCard({
   today.setHours(0, 0, 0, 0);
   const isOverdue = task.deadline !== null && new Date(task.deadline) < today;
 
+  const wasDraggingRef = useRef(false);
+
   const handleDragStart = (e: React.DragEvent) => {
+    wasDraggingRef.current = true;
     e.dataTransfer.setData('taskId', String(task.id));
     e.dataTransfer.setData('sourceStatus', task.status);
     e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = () => {
+    setTimeout(() => { wasDraggingRef.current = false; }, 0);
   };
 
   const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -78,6 +86,7 @@ export default function TaskCard({
       className={cardClass}
       draggable
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragOver={onDragOverCard ? (e) => onDragOverCard(e, task.id) : undefined}
       onDragLeave={onDragLeaveCard}
     >
@@ -87,7 +96,7 @@ export default function TaskCard({
             {PRIORITY_LABEL[task.priority]}
           </span>
         )}
-        <button className="card-edit-btn" onClick={() => onEdit(task)} aria-label="編集">
+        <button className="card-edit-btn" onClick={() => { if (wasDraggingRef.current) return; onEdit(task); }} aria-label="編集">
           ✎
         </button>
       </div>
@@ -117,7 +126,7 @@ export default function TaskCard({
         {task.status !== 'TODO' && (
           <button
             className="status-nav-btn"
-            onClick={(e) => { e.stopPropagation(); handleStatusStep('prev'); }}
+            onClick={(e) => { e.stopPropagation(); if (wasDraggingRef.current) return; handleStatusStep('prev'); }}
             aria-label="ステータスを戻す"
           >
             ←
@@ -126,7 +135,7 @@ export default function TaskCard({
         {task.status !== 'DONE' && (
           <button
             className="status-nav-btn status-nav-btn--next"
-            onClick={(e) => { e.stopPropagation(); handleStatusStep('next'); }}
+            onClick={(e) => { e.stopPropagation(); if (wasDraggingRef.current) return; handleStatusStep('next'); }}
             aria-label="ステータスを進める"
           >
             →
