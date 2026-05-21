@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { CreateTaskRequest, UpdateTaskRequest, Task, Status } from '../types/task';
 
+
 const apiClient = axios.create({
   baseURL: 'http://localhost:8080',
   headers: { 'Content-Type': 'application/json' },
@@ -23,5 +24,10 @@ export const updateTask = async (id: number, data: UpdateTaskRequest): Promise<T
 
 export const updateTaskStatus = async (id: number, status: Status): Promise<Task> => {
   const response = await apiClient.patch<Task>(`/api/tasks/${id}/status`, { status });
+  return response.data;
+};
+
+export const reorderTasks = async (status: Status, orderedIds: number[]): Promise<Task[]> => {
+  const response = await apiClient.patch<Task[]>('/api/tasks/reorder', { status, orderedIds });
   return response.data;
 };

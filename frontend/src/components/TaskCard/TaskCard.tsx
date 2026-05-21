@@ -6,6 +6,9 @@ interface Props {
   task: Task;
   onEdit: (task: Task) => void;
   onUpdated: (task: Task) => void;
+  dragIndicator?: 'before' | 'after' | null;
+  onDragOverCard?: (e: React.DragEvent, cardId: number) => void;
+  onDragLeaveCard?: () => void;
 }
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -20,13 +23,21 @@ const STATUS_OPTIONS: { value: Status; label: string }[] = [
   { value: 'DONE', label: '完了' },
 ];
 
-export default function TaskCard({ task, onEdit, onUpdated }: Props) {
+export default function TaskCard({
+  task,
+  onEdit,
+  onUpdated,
+  dragIndicator,
+  onDragOverCard,
+  onDragLeaveCard,
+}: Props) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const isOverdue = task.deadline !== null && new Date(task.deadline) < today;
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('taskId', String(task.id));
+    e.dataTransfer.setData('sourceStatus', task.status);
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -36,15 +47,25 @@ export default function TaskCard({ task, onEdit, onUpdated }: Props) {
       const updated = await updateTaskStatus(task.id, newStatus);
       onUpdated(updated);
     } catch {
-      // ステータス変更失敗時は何もしない（UIは元に戻る）
+      // 失敗時はUIを変えない
     }
   };
 
+  const cardClass = [
+    'card',
+    dragIndicator === 'before' ? 'drag-indicator-before' : '',
+    dragIndicator === 'after' ? 'drag-indicator-after' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div
-      className="card"
+      className={cardClass}
       draggable
       onDragStart={handleDragStart}
+      onDragOver={onDragOverCard ? (e) => onDragOverCard(e, task.id) : undefined}
+      onDragLeave={onDragLeaveCard}
     >
       <div className="card-header">
         {task.priority && (

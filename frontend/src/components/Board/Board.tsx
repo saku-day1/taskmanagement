@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Status, Task } from '../../types/task';
-import { fetchTasks, updateTaskStatus } from '../../api/taskApi';
+import { fetchTasks, updateTaskStatus, reorderTasks } from '../../api/taskApi';
 import BoardColumn from '../BoardColumn/BoardColumn';
 import TaskForm from '../TaskForm/TaskForm';
 import './Board.css';
@@ -51,6 +51,25 @@ export default function Board() {
     setEditingTask(undefined);
   };
 
+  const handleReorder = async (status: Status, orderedIds: number[]) => {
+    // 楽観的UI更新：先にローカルの順序を変える
+    setTasks((prev) => {
+      const inColumn = orderedIds.map((id) => prev.find((t) => t.id === id)!).filter(Boolean);
+      const others = prev.filter((t) => t.status !== status || !orderedIds.includes(t.id));
+      return [...others, ...inColumn];
+    });
+    try {
+      const updated = await reorderTasks(status, orderedIds);
+      setTasks((prev) => {
+        const updatedMap = new Map(updated.map((t) => [t.id, t]));
+        return prev.map((t) => updatedMap.get(t.id) ?? t);
+      });
+    } catch {
+      // 失敗時は再フェッチで復元
+      fetchTasks().then(setTasks).catch(() => {});
+    }
+  };
+
   const handleDrop = async (taskId: number, newStatus: Status) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task || task.status === newStatus) return;
@@ -93,6 +112,7 @@ export default function Board() {
             onEdit={setEditingTask}
             onUpdated={replaceTask}
             onDrop={handleDrop}
+            onReorder={handleReorder}
           />
         ))}
       </div>
