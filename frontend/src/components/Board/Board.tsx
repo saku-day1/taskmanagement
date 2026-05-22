@@ -49,7 +49,7 @@ export default function Board() {
     setTasks((prev) =>
       prev.some((t) => t.id === task.id)
         ? prev.map((t) => (t.id === task.id ? task : t))
-        : [...prev, task]
+        : [task, ...prev]
     );
     setShowForm(false);
     setEditingTask(undefined);

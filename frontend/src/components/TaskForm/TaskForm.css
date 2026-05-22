@@ -72,6 +72,21 @@
   color: #ef4444;
 }
 
+.task-form-field-error {
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 400;
+}
+
+.task-form-input--error {
+  border-color: #ef4444;
+}
+
+.task-form-input--error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px #fee2e2;
+}
+
 .task-form-actions {
   display: flex;
   justify-content: flex-end;

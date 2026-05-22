@@ -19,7 +19,8 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
   const [title, setTitle] = useState(initialTask?.title ?? '');
   const [description, setDescription] = useState(initialTask?.description ?? '');
   const [deadline, setDeadline] = useState(initialTask?.deadline ?? '');
-  const [priority, setPriority] = useState<Priority | ''>(initialTask?.priority ?? '');
+  const [priority, setPriority] = useState<Priority>(initialTask?.priority ?? 'MEDIUM');
+  const [titleTouched, setTitleTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +39,7 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
           title: title.trim(),
           description: description.trim() || null,
           deadline: deadline || null,
-          priority: priority || null,
+          priority,
         };
         saved = await updateTask(initialTask.id, data);
       } else {
@@ -46,7 +47,7 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
           title: title.trim(),
           description: description.trim() || null,
           deadline: deadline || null,
-          priority: priority || null,
+          priority,
         };
         saved = await createTask(data);
       }
@@ -66,14 +67,18 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
           <label className="task-form-label">
             タイトル <span className="task-form-required">*</span>
             <input
-              className="task-form-input"
+              className={`task-form-input${titleTouched && !title.trim() ? ' task-form-input--error' : ''}`}
               type="text"
               value={title}
+              placeholder="タスクのタイトルを入力"
               onChange={(e) => setTitle(e.target.value)}
+              onBlur={() => setTitleTouched(true)}
               maxLength={50}
-              required
               autoFocus
             />
+            {titleTouched && !title.trim() && (
+              <span className="task-form-field-error">タイトルを入力してください</span>
+            )}
           </label>
 
           <label className="task-form-label">
@@ -81,6 +86,7 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
             <textarea
               className="task-form-textarea"
               value={description}
+              placeholder="説明文を入力（任意）"
               onChange={(e) => setDescription(e.target.value)}
               maxLength={200}
               rows={3}
@@ -98,13 +104,12 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
           </label>
 
           <label className="task-form-label">
-            優先度
+            優先度 <span className="task-form-required">*</span>
             <select
               className="task-form-select"
               value={priority}
-              onChange={(e) => setPriority(e.target.value as Priority | '')}
+              onChange={(e) => setPriority(e.target.value as Priority)}
             >
-              <option value="">未設定</option>
               {PRIORITY_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -123,6 +128,7 @@ export default function TaskForm({ initialTask, onSaved, onClose }: Props) {
               type="submit"
               className="task-form-btn-submit"
               disabled={submitting || !title.trim()}
+              onClick={() => setTitleTouched(true)}
             >
               {submitting ? (isEdit ? '更新中...' : '登録中...') : (isEdit ? '更新' : '登録')}
             </button>

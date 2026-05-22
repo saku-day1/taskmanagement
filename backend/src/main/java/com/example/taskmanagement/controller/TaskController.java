@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
@@ -73,6 +72,8 @@ public class TaskController {
     }
 
     record StatusRequest(Status status) {
-        public Status getStatus() { return status; }
+        public Status getStatus() {
+            return status;
+        }
     }
 }
