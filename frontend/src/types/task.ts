@@ -17,12 +17,12 @@ export interface CreateTaskRequest {
   title: string;
   description: string | null;
   deadline: string | null;
-  priority: Priority | null;
+  priority: Priority;
 }
 
 export interface UpdateTaskRequest {
   title?: string;
   description?: string | null;
   deadline?: string | null;
-  priority?: Priority | null;
+  priority?: Priority;
 }

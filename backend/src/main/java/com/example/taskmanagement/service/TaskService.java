@@ -34,7 +34,9 @@ public class TaskService {
     public Task update(Long id, UpdateTaskRequest req) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found: " + id));
-        if (req.getTitle() != null) task.setTitle(req.getTitle());
+        if (req.getTitle() != null) {
+            task.setTitle(req.getTitle());
+        }
         task.setDescription(req.getDescription());
         task.setDeadline(req.getDeadline());
         task.setPriority(req.getPriority());
