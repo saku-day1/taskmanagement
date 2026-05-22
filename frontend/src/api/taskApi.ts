@@ -30,3 +30,7 @@ export const reorderTasks = async (status: Status, orderedIds: number[]): Promis
   const response = await apiClient.patch<Task[]>('/api/tasks/reorder', { status, orderedIds });
   return response.data;
 };
+
+export const deleteTask = async (id: number): Promise<void> => {
+  await apiClient.delete(`/api/tasks/${id}`);
+};

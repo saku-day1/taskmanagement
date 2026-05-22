@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { Status, Task } from '../../types/task';
-import { fetchTasks, updateTaskStatus, reorderTasks } from '../../api/taskApi';
+import { fetchTasks, updateTaskStatus, reorderTasks, deleteTask } from '../../api/taskApi';
 import BoardColumn from '../BoardColumn/BoardColumn';
 import TaskForm from '../TaskForm/TaskForm';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
+import TrashZone from '../TrashZone/TrashZone';
 import './Board.css';
 
 const COLUMNS: { status: Status; label: string }[] = [
@@ -18,6 +20,8 @@ export default function Board() {
   const [query, setQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+  const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     fetchTasks()
@@ -68,6 +72,27 @@ export default function Board() {
     }
   };
 
+  const handleDeleteRequest = (task: Task) => {
+    setDeletingTask(task);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingTask) return;
+    const target = deletingTask;
+    setDeletingTask(null);
+    try {
+      await deleteTask(target.id);
+      setTasks((prev) => prev.filter((t) => t.id !== target.id));
+    } catch {
+      // 削除失敗時はUIを変えない
+    }
+  };
+
+  const handleTrashDrop = (taskId: number) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) setDeletingTask(task);
+  };
+
   const handleDrop = async (taskId: number, newStatus: Status) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task || task.status === newStatus) return;
@@ -88,6 +113,15 @@ export default function Board() {
           onClose={() => { setShowForm(false); setEditingTask(undefined); }}
         />
       )}
+      {deletingTask && (
+        <ConfirmDialog
+          title="タスクを削除しますか？"
+          message={`「${deletingTask.title}」を削除します。この操作は取り消せません。`}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeletingTask(null)}
+        />
+      )}
+      {isDragging && <TrashZone onDrop={handleTrashDrop} />}
       <div className="board-toolbar">
         <input
           className="search-input"
@@ -109,8 +143,11 @@ export default function Board() {
             tasks={filtered.filter((t) => t.status === col.status)}
             onEdit={setEditingTask}
             onUpdated={replaceTask}
+            onDelete={handleDeleteRequest}
             onDrop={handleDrop}
             onReorder={handleReorder}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setIsDragging(false)}
           />
         ))}
       </div>

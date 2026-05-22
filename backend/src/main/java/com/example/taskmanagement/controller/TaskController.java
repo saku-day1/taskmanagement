@@ -62,6 +62,16 @@ public class TaskController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        try {
+            taskService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     record StatusRequest(Status status) {
         public Status getStatus() { return status; }
     }
