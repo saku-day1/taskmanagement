@@ -6,7 +6,6 @@ import com.example.taskmanagement.model.Task;
 import com.example.taskmanagement.model.UpdateTaskRequest;
 import com.example.taskmanagement.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,11 +20,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     public List<Task> findAll() {
-        Sort sort = Sort.by(
-                Sort.Order.asc("displayOrder").nullsLast(),
-                Sort.Order.desc("createdAt")
-        );
-        return taskRepository.findAll(sort);
+        return taskRepository.findAllOrdered();
     }
 
     public Optional<Task> findById(Long id) {
@@ -63,5 +58,12 @@ public class TaskService {
                 .orElseThrow(() -> new NoSuchElementException("Task not found: " + id));
         task.setStatus(status);
         return taskRepository.save(task);
+    }
+
+    public void delete(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new NoSuchElementException("Task not found: " + id);
+        }
+        taskRepository.deleteById(id);
     }
 }

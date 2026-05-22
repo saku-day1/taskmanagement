@@ -1,0 +1,45 @@
+.trash-zone {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 32px;
+  border-radius: 40px;
+  background: rgba(241, 245, 249, 0.95);
+  border: 2px dashed #cbd5e1;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  pointer-events: all;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  z-index: 100;
+  animation: trash-zone-in 0.2s ease-out;
+}
+
+@keyframes trash-zone-in {
+  from {
+    opacity: 0;
+    bottom: 16px;
+  }
+  to {
+    opacity: 1;
+    bottom: 32px;
+  }
+}
+
+.trash-zone--over {
+  background: rgba(254, 226, 226, 0.97);
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: translateX(-50%) scale(1.06);
+}
+
+.trash-zone-icon {
+  font-size: 20px;
+  line-height: 1;
+}

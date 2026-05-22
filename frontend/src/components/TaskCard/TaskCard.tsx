@@ -7,9 +7,12 @@ interface Props {
   task: Task;
   onEdit: (task: Task) => void;
   onUpdated: (task: Task) => void;
+  onDelete: (task: Task) => void;
   dragIndicator?: 'before' | 'after' | null;
   onDragOverCard?: (e: React.DragEvent, cardId: number) => void;
   onDragLeaveCard?: () => void;
+  onDragStart?: (taskId: number) => void;
+  onDragEnd?: () => void;
 }
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -31,9 +34,12 @@ export default function TaskCard({
   task,
   onEdit,
   onUpdated,
+  onDelete,
   dragIndicator,
   onDragOverCard,
   onDragLeaveCard,
+  onDragStart: onDragStartProp,
+  onDragEnd: onDragEndProp,
 }: Props) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -46,10 +52,12 @@ export default function TaskCard({
     e.dataTransfer.setData('taskId', String(task.id));
     e.dataTransfer.setData('sourceStatus', task.status);
     e.dataTransfer.effectAllowed = 'move';
+    onDragStartProp?.(task.id);
   };
 
   const handleDragEnd = () => {
     setTimeout(() => { wasDraggingRef.current = false; }, 0);
+    onDragEndProp?.();
   };
 
   const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -98,9 +106,14 @@ export default function TaskCard({
             {PRIORITY_LABEL[task.priority]}
           </span>
         )}
-        <button className="card-edit-btn" onClick={() => { if (wasDraggingRef.current) return; onEdit(task); }} aria-label="編集">
-          ✎
-        </button>
+        <div className="card-actions">
+          <button className="card-edit-btn" onClick={() => { if (wasDraggingRef.current) return; onEdit(task); }} aria-label="編集">
+            ✎
+          </button>
+          <button className="card-delete-btn" onClick={(e) => { e.stopPropagation(); if (wasDraggingRef.current) return; onDelete(task); }} aria-label="削除">
+            🗑
+          </button>
+        </div>
       </div>
       <p className="card-title">{task.title}</p>
       {task.description && (

@@ -21,7 +21,19 @@
   min-height: 20px;
 }
 
-.card-edit-btn {
+.card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.card:hover .card-actions {
+  opacity: 1;
+}
+
+.card-edit-btn,
+.card-delete-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -29,16 +41,14 @@
   color: #94a3b8;
   padding: 0 2px;
   line-height: 1;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.card:hover .card-edit-btn {
-  opacity: 1;
 }
 
 .card-edit-btn:hover {
   color: #6366f1;
+}
+
+.card-delete-btn:hover {
+  color: #ef4444;
 }
 
 .card-title {

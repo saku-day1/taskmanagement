@@ -41,8 +41,11 @@ interface Props {
   tasks: Task[];
   onEdit: (task: Task) => void;
   onUpdated: (task: Task) => void;
+  onDelete: (task: Task) => void;
   onDrop: (taskId: number, newStatus: Status) => void;
   onReorder: (status: Status, orderedIds: number[]) => void;
+  onDragStart?: (taskId: number) => void;
+  onDragEnd?: () => void;
 }
 
 export default function BoardColumn({
@@ -51,8 +54,11 @@ export default function BoardColumn({
   tasks,
   onEdit,
   onUpdated,
+  onDelete,
   onDrop,
   onReorder,
+  onDragStart,
+  onDragEnd,
 }: Props) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('manual');
@@ -143,9 +149,12 @@ export default function BoardColumn({
             task={task}
             onEdit={onEdit}
             onUpdated={onUpdated}
+            onDelete={onDelete}
             dragIndicator={dragOverCardId === task.id ? dropPosition : null}
             onDragOverCard={sortKey === 'manual' ? handleDragOverCard : undefined}
             onDragLeaveCard={handleDragLeaveCard}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
           />
         ))}
         {sorted.length === 0 && (
